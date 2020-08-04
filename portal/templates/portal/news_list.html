@@ -1,35 +1,13 @@
-{% load static %}
+{% extends 'portal/base.html' %}
 
-<html>
-
-<head>
-	<title>Electroportal</title>
-	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-	<link href="https://fonts.googleapis.com/css?family=Lobster&subset=latin,cyrillic" rel="stylesheet" type="text/css">
-	<link rel="stylesheet" href="{% static '/css/portal.css' %}">
-	<link rel="stylesheet" href="/static/css/portal.css">
-</head>
-
-<body>
-	<div class="page-header">
-		<h1><a href="/">News</a></h1>
-	</div>
-	<div class="content container">
-		<div class="row">
-			<div class="col-md-8">
-				{% for new in news %}
-				<div class="post">
-					<div class="date">
-						<p>Опубликовано: {{ new.published_date }}</p>
-					</div>
-					<h1><a href="">{{ new.title }}</a></h1>
-					<p>{{ new.text|linebreaksbr }}</p>
-				</div>
-				{% endfor %}
+{% block content %}
+	{% for new in news %}
+		<div class="post">
+			<div class="date">
+				<p>Опубликовано: {{ new.published_date }}</p>
 			</div>
+			<h1><a href="{% url 'new_detail' pk=new.pk %}">{{ new.title }}</a></h1>
+			<p>{{ new.text|linebreaksbr }}</p>
 		</div>
-	</div>
-</body>
-
-</html>
+	{% endfor %}
+{% endblock %}
