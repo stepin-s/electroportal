@@ -1,0 +1,18 @@
+{% extends 'portal/base.html' %}
+
+{% block content %}
+<div class="video">
+	<!-- {% if video.published_date %} -->
+	<div class="date">
+		<!-- <p>Добавлено: {{ video.created_date }}</p> -->
+		<p>Опубликовано: {{ video.published_date }}</p>
+	</div>
+	<!-- {% endif %} -->
+	<h1>{{ video.title }}</h1>
+	<div class="my-3">
+		<iframe width="560" height="315" src="{{ video.link}}" frameborder="0"
+			allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	</div>
+	<p>{{ video.text }}</p>
+</div>
+{% endblock %}
