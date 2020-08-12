@@ -8,12 +8,12 @@
 		<p>Опубликовано: {{ new.published_date }}</p>
 	</div>
 	{% endif %}
-	{% if user.is_authenticated %}
-	<a class="btn btn-default" href="{% url 'new_edit' pk=new.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
-	{% endif %}
+
 	<h1>{{ new.title }}</h1>
 	<p>{{ new.text|linebreaksbr }}</p>
-	<br>
+	{% if user.is_authenticated %}
+	<a class="btn btn-default" href="{% url 'new_edit' pk=new.pk %}"><i class="far fa-edit fa-3x" style="color: black"></i></a>
+	{% endif %}
 	<p><b>{{ new.author|linebreaksbr }}</b></p>
 </div>
 {% endblock %}
