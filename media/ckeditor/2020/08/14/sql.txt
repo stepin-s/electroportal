@@ -1,0 +1,121 @@
+
+Как сохранить результаты запросов MySQL в другой таблице?
+если таблица не существует (и вы, например, не хотите ее создавать, потому что она может содержать много имен столбцов), вы можете создать ее на лету...
+CREATE TABLE another_table SELECT/ваш запрос идет здесь/
+INSERT INTO another_table SELECT /*your query goes here*/
+
+CREATE TABLE `host1646283_parser__bu`.`offer__2019__11` SELECT * FROM  `host1646283_parser`.`offer` WHERE `host1646283_parser`.`offer`.`created_at` BETWEEN 1572555600 AND 1575147600
+CREATE TABLE `host1646283_parser__bu`.`offer__2019__12` SELECT * FROM  `host1646283_parser`.`offer` WHERE `host1646283_parser`.`offer`.`created_at` BETWEEN 1575147600 AND 1577826000
+CREATE TABLE `host1646283_parser__bu`.`offer__2020__01` SELECT * FROM  `host1646283_parser`.`offer` WHERE `host1646283_parser`.`offer`.`created_at` BETWEEN 1577826000 AND 1580504400
+CREATE TABLE `host1646283_parser__bu`.`offer__2020__02` SELECT * FROM  `host1646283_parser`.`offer` WHERE `host1646283_parser`.`offer`.`created_at` BETWEEN 1580504400 AND 1583010000
+CREATE TABLE `host1646283_parser__bu`.`offer__2020__03` SELECT * FROM  `host1646283_parser`.`offer` WHERE `host1646283_parser`.`offer`.`created_at` BETWEEN 1583010000 AND 1585688400
+CREATE TABLE `host1646283_parser__bu`.`offer__2020__04` SELECT * FROM  `host1646283_parser`.`offer` WHERE `host1646283_parser`.`offer`.`created_at` BETWEEN 1585688400 AND 1588280400
+CREATE TABLE `host1646283_parser__bu`.`offer__2020__05` SELECT * FROM  `host1646283_parser`.`offer` WHERE `host1646283_parser`.`offer`.`created_at` BETWEEN 1588280400 AND 1590958800
+CREATE TABLE `host1646283_parser__bu`.`offer__2020__06` SELECT * FROM  `host1646283_parser`.`offer` WHERE `host1646283_parser`.`offer`.`created_at` BETWEEN 1590958800 AND 1593550800
+
+DELETE FROM `offer` WHERE `created_at` BETWEEN 1577826000 AND 1580504400 LIMIT 50000
+
+
+
+SELECT `profile__smshistory`.* FROM `profile`, `profile__smshistory` WHERE `profile__smshistory`.created_at BETWEEN 1592255000 AND 1592341400 AND `profile__smshistory`.entity_id = `profile`.id AND `profile`.region_id = 50
+
+
+
+Событие для удаления записей таблицы каждый час.
+SET GLOBAL `event_scheduler` = ON;
+CREATE EVENT `hourly_event`
+ON SCHEDULE EVERY 1 HOUR
+DO
+DELETE FROM `table`;
+
+
+
+
+
+Просмотр активных событий в планировщике.
+SHOW EVENTS WHERE STATUS='ENABLED'
+
+
+
+
+
+Архивирование таблицы с помощью планировщика событий.
+CREATE PROCEDURE `archive_table`()
+NOT DETERMINISTIC
+CONTAINS SQL
+BEGIN
+  SET @tbl_archive=CONCAT('log_', DATE_FORMAT(CURRENT_TIMESTAMP, '%Y%m%d_%H%i'));
+  SET @archive_query:=CONCAT('CREATE TABLE ', @tbl_archive, ' ENGINE=ARCHIVE AS (SELECT * FROM `table`)');
+  PREPARE archive_query FROM @archive_query;
+  EXECUTE archive_query;
+  DEALLOCATE PREPARE archive_query;
+  DELETE FROM `table`;
+END;
+CREATE EVENT `archive_event`
+  ON SCHEDULE EVERY 1 WEEK STARTS CURRENT_TIMESTAMP
+  ON COMPLETION NOT PRESERVE
+  ENABLE
+  DO
+call archive_table();
+
+
+
+
+Получить название поля, которое является первичным ключом в таблице.
+SELECT `COLUMN_NAME` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = 'table' AND `COLUMN_KEY` = 'PRI';
+
+
+
+Получить размер базы данных MySQL.
+SELECT `table_schema` AS `Db name`,
+ROUND(SUM(`data_length` + `index_length`) / 1024 / 1024, 3) AS 'Db size(MB)'
+FROM `information_schema`.`tables`
+GROUP BY `table_schema` 
+HAVING `table_schema`='test';
+
+
+
+Определить количество слов в столбце.
+SELECT LENGTH(`fio`) - LENGTH(REPLACE(`fio`, ' ', '')) + 1 AS `words_count` FROM `table`;
+
+
+
+Получить текст до дефиса
+SELECT SUBSTRING(`field`, 1, (POSITION("-" IN `field`) -1)) AS `new_field` FROM  `table`
+
+
+
+Замена в тексте
+UPDATE `table` SET `field` = REPLACE(`field`, 'старый текст', 'новый текст')
+
+
+
+Получение даты последнего изменения таблицы MySQL
+SHOW TABLE STATUS FROM db_name LIKE 'table_name'
+Время последнего изменения таблицы будет отбражено в ключе «Update_time».
+
+
+
+SELECT username FROM users WHERE username REGEXP 'user[0-9*]'
+Этот запрос вернет пользователей вида user1, user2, user3, и т.д.
+
+
+
+Получение объема и количества записей в таблицах
+SELECT table_name AS table_name, engine, ROUND(data_length/1024/1024,2) AS total_size_mb, table_rows
+FROM information_schema.tables WHERE table_schema=DATABASE();
+
+
+
+Обновить запись, и добавить ее, если такой записи нет
+Запрос, изменяющий запись если она есть. А еслии ее нет, то добавляет ее.
+INSERT INTO table SET column = 1, id=101 ON DUPLICATE KEY UPDATE column = column + 1
+
+
+
+Объедениение нескольких запросов (c исключением повторений в результате)
+(SELECT login, pass, male FROM users) UNION (SELECT login, pass, male FROM clients);
+
+
+
+SELECT * FROM posts WHERE user_id = (SELECT id FROM clients WHERE login = 'Margaret');

@@ -4,13 +4,15 @@ from django.utils import timezone
 from django.urls import reverse
 from django.contrib import admin
 from django.utils.html import format_html
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 class News(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    text = models.TextField()
+    text = RichTextUploadingField()
+    upload = models.FileField(upload_to='uploads/%Y/%m/%d/')
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
 

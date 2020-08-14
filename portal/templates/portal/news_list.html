@@ -7,7 +7,7 @@
 				<p>Опубликовано: {{ new.published_date }}</p>
 			</div>
 			<h1><a href="{% url 'new_detail' pk=new.pk %}">{{ new.title }}</a></h1>
-			<p>{{ new.text|linebreaksbr }}</p>
+			<p>{{ new.text|safe }}</p>
 		</div>
 	{% endfor %}
 {% endblock %}

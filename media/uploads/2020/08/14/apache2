@@ -1,0 +1,31 @@
+
+<VirtualHost *:19080>
+	ServerName crm.localhost
+	ServerAlias www.crm.localhost
+	ServerAlias 192.168.0.87
+	#ServerAlias fedoperator.localhost
+	#ServerAlias www.fedoperator.localhost
+	
+	ServerAdmin devazbn@yandex.ru
+	DocumentRoot /var/www/sites/crm.localhost/html
+	DirectoryIndex index.php index.html index.htm
+	
+	<Directory /var/www/sites/crm.localhost/html>
+		Options FollowSymLinks MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+	
+	<Files xmlrpc.php>
+		Order deny,allow
+		deny from all
+	</Files>
+	
+	LogLevel notice
+	ErrorLog /var/www/log/crm.localhost/apache2-error.log
+	CustomLog /var/www/log/crm.localhost/apache2-access.log combined
+</VirtualHost>
+
+#AzbnAutoConfig
+
