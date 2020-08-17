@@ -5,6 +5,7 @@ from django.urls import path, include
 from django.views.static import serve
 from django.conf.urls import url, include
 from mysite import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.news_list, name='news_list'),
@@ -22,7 +23,4 @@ if settings.DEBUG:
         url(r'^media/(?P<path>.*)$', serve, {
             'document_root': settings.MEDIA_ROOT
         }),
-        url(r'^new/<int:pk>/media/(?P<path>.*)$', serve, {
-            'document_root': settings.MEDIA_ROOT
-        }),
-    ]
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
